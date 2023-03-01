@@ -44,13 +44,13 @@ function ajaxLogin(url, password) {
             //     'login' : true,
             // }));
 
-            createCookie('savenote',[
-                       url, true
-                  ], 1);
+            // createCookie('savenote',[
+            //            url, true
+            //       ], 1);
             window.location.href = `/${url}`;
         },
         error: function (err) {
-            window.location.href = `/${url}`;
+            //window.location.href = `/${url}`;
         }
     });
 }

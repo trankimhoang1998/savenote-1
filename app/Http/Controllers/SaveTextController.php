@@ -7,7 +7,7 @@ use Faker\Provider\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Cookie;
+use Hash;
 
 class SaveTextController extends Controller
 {
@@ -44,7 +44,7 @@ class SaveTextController extends Controller
 
             //dd($_COOKIE['savenote']);
 
-            $savenote =  $_COOKIE['savenote'] ?? '';
+            //$savenote =  $_COOKIE['savenote'] ?? '';
 
 
             //dd($savenote);
@@ -56,7 +56,8 @@ class SaveTextController extends Controller
 
            // if($notepad['password'] && $notepad['url'] !== $url) {
 
-            if($notepad['password'] && !$request->session()->get('password_' .$notePath)) {
+
+            if(isset($notepad['password']) && !$request->session()->get('password_' .$notePath) ) {
                 return view('save_text.password',compact('notePath'));
             }
 
@@ -134,9 +135,12 @@ class SaveTextController extends Controller
     public function updatePass(Request $request)
     {
         $data = $request->all();
+        $data['password'] = Hash::make($data['password']);
+
 
         if (!empty($data['password']) && !empty($data['url'])) {
             $notepad = Notepad::where('url', $data['url'])->first();
+
             if ($notepad) {
                 $notepad->update($data);
             } else {
@@ -154,7 +158,7 @@ class SaveTextController extends Controller
         $data = $request->all();
         $notepad = Notepad::where(['url' => $data['url']])->first();
 
-        if($notepad['password'] == $data['password']) {
+        if(Hash::check($data['password'],$notepad['password'])) {
             $request->session()->put('password_' .$data['url'], true);
             return response()->json(true, 200);
         }
